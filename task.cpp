@@ -9,8 +9,13 @@
 using namespace std;
 
 const double G = 6.67384e-11;
+#define dt 1 // шаг по времени
+#define iters 100 // число итераций
+#define  num_thread 2 // число потоков
 #define SQUARE(x) (x) * (x)
 #define CUBE(x) (x) * (x) * (x)
+
+// вспомогательно для консоль лога
 #ifndef INFO
 #define INFO(str)                      \
     do                                 \
@@ -22,18 +27,11 @@ const double G = 6.67384e-11;
 struct Body
 {
     double x, y, vx, vy, m;
-    friend std::ostream &operator<<(std::ostream &out, const Body &b)
-    {
-        out << "(" << b.x << ", " << b.y << ")"
-            << "Vx= " << b.vx << ", Vy= " << b.vy
-            << "M= " << b.m;
-        return out;
-    }
 };
 bool gui, finsish = false;
-double t, Gmm, angle;
+double Gmm;
 Body *bodies, *new_bodies;
-int num_thread, iters, num_body;
+int num_body;
 
 int queuing_jobs = 0, num_done = 0;
 pthread_mutex_t queuing;
@@ -54,10 +52,10 @@ inline void move_nth_body(int index)
         f_sum_x += Gmm * dx / radius_cube_sqrt;
         f_sum_y += Gmm * dy / radius_cube_sqrt;
     }
-    new_a.vx = a.vx + f_sum_x * t / a.m;
-    new_a.vy = a.vy + f_sum_y * t / a.m;
-    new_a.x = a.x + new_a.vx * t;
-    new_a.y = a.y + new_a.vy * t;
+    new_a.vx = a.vx + f_sum_x * dt / a.m;
+    new_a.vy = a.vy + f_sum_y * dt / a.m;
+    new_a.x = a.x + new_a.vx * dt;
+    new_a.y = a.y + new_a.vy * dt;
     new_a.m = a.m;
 }
 void *worker(void *param)
@@ -97,10 +95,15 @@ void input_bodies(string filename)
 }
 void init_env(int count, const char **argv)
 {
-    double len;
-    num_thread = 2, iters = 10, t = 1, angle = 0;
-
     input_bodies("test1.txt");
+}
+
+void write_to_file(string filename, string output_text)
+{
+    ofstream output;
+    output.open(filename);
+    output << output_text;
+    output.close();
 }
 
 int main(int argc, char const **argv)
@@ -115,13 +118,18 @@ int main(int argc, char const **argv)
     for (int i = 0; i < num_thread; ++i)
         pthread_create(&workers[i], NULL, worker, NULL);
 
+    string output_text ;
     for (int i = 0; i < iters; ++i)
     {
+        output_text = output_text + to_string(i * dt);
+
         for (int i = 0; i < num_body; ++i)
         {
             Body &t = bodies[i];
-            INFO(i << " " << t.x << " " << t.y);
+            output_text = output_text + ';';
+            output_text = output_text + to_string(t.x) + ';' + to_string(t.y);
         }
+        output_text = output_text + "\n";
         pthread_mutex_lock(&queuing);
         queuing_jobs = num_body, num_done = 0;
         pthread_cond_broadcast(&processing);
@@ -131,6 +139,8 @@ int main(int argc, char const **argv)
         new_bodies = bodies;
         bodies = t;
     }
+
+    write_to_file("output.csv", output_text);
     finsish = true;
     pthread_mutex_lock(&queuing);
     pthread_cond_broadcast(&processing);
