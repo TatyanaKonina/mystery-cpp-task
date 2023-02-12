@@ -21,16 +21,17 @@ const double G = 6.67384e-11;
 #endif
 struct Body
 {
-    double x, y, vx, vy;
+    double x, y, vx, vy, m;
     friend std::ostream &operator<<(std::ostream &out, const Body &b)
     {
         out << "(" << b.x << ", " << b.y << ")"
-            << "Vx= " << b.vx << ", Vy= " << b.vy;
+            << "Vx= " << b.vx << ", Vy= " << b.vy
+            << "M= " << b.m;
         return out;
     }
 };
 bool gui, finsish = false;
-double mass, t, Gmm, angle;
+double t, Gmm, angle;
 Body *bodies, *new_bodies;
 int num_thread, iters, num_body;
 
@@ -47,15 +48,17 @@ inline void move_nth_body(int index)
         if (index == i)
             continue;
         Body &b = bodies[i];
+        Gmm = G * b.m * a.m;
         double dx = b.x - a.x, dy = b.y - a.y,
                radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy))) + 10e-7;
         f_sum_x += Gmm * dx / radius_cube_sqrt;
         f_sum_y += Gmm * dy / radius_cube_sqrt;
     }
-    new_a.vx = a.vx + f_sum_x * t / mass;
-    new_a.vy = a.vy + f_sum_y * t / mass;
+    new_a.vx = a.vx + f_sum_x * t / a.m;
+    new_a.vy = a.vy + f_sum_y * t / a.m;
     new_a.x = a.x + new_a.vx * t;
     new_a.y = a.y + new_a.vy * t;
+    new_a.m = a.m;
 }
 void *worker(void *param)
 {
@@ -88,36 +91,17 @@ void input_bodies(string filename)
     for (int i = 0; i < num_body; ++i)
     {
         Body &t = bodies[i];
-        input >> t.x >> t.y >> t.vx >> t.vy;
+        input >> t.m >> t.x >> t.y >> t.vx >> t.vy;
     }
     input.close();
 }
 void init_env(int count, const char **argv)
 {
     double len;
-    num_thread = 2, iters = 300;
-    mass = 1, t = 1, angle = 0;
-    // gui = true
-    // if (gui) {
-    //     xmin = -1, ymin = -1;
-    //     len = 2.5, window_len = 500;
-    //     mf = (double) window_len / len;
-    //     init_window(window_len);
-    // }
+    num_thread = 2, iters = 10, t = 1, angle = 0;
+
     input_bodies("test1.txt");
 }
-// void draw_points(int mode)
-// {
-//     if (mode == 0)
-//         XClearWindow(display, window);
-//     XSetForeground(display, gc, whitecolor);
-//     for (int i = 0; i < num_body; ++i)
-//     {
-//         Body &t = bodies[i];
-//         XDrawPoint(display, window, gc, (t.x - xmin) * mf, (t.y - ymin) * mf);
-//     }
-//     XFlush(display);
-// }
 
 int main(int argc, char const **argv)
 {
@@ -131,11 +115,8 @@ int main(int argc, char const **argv)
     for (int i = 0; i < num_thread; ++i)
         pthread_create(&workers[i], NULL, worker, NULL);
 
-    Gmm = G * mass * mass;
     for (int i = 0; i < iters; ++i)
     {
-        // if (gui)
-        //     draw_points(0);;
         for (int i = 0; i < num_body; ++i)
         {
             Body &t = bodies[i];
