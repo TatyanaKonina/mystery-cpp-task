@@ -9,9 +9,9 @@
 using namespace std;
 
 const double G = 6.67384e-11;
-#define dt 1 // шаг по времени
-#define iters 100 // число итераций
-#define  num_thread 2 // число потоков
+#define dt 300         // шаг по времени
+#define iters 100    // число итераций
+#define num_thread 2 // число потоков
 #define SQUARE(x) (x) * (x)
 #define CUBE(x) (x) * (x) * (x)
 
@@ -48,13 +48,14 @@ inline void move_nth_body(int index)
         Body &b = bodies[i];
         Gmm = G * b.m * a.m;
         double dx = b.x - a.x, dy = b.y - a.y,
-               radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy))) + 10e-7;
+        radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy))) + 10e-7;
         f_sum_x += Gmm * dx / radius_cube_sqrt;
         f_sum_y += Gmm * dy / radius_cube_sqrt;
     }
     new_a.vx = a.vx + f_sum_x * dt / a.m;
     new_a.vy = a.vy + f_sum_y * dt / a.m;
     new_a.x = a.x + new_a.vx * dt;
+    
     new_a.y = a.y + new_a.vy * dt;
     new_a.m = a.m;
 }
@@ -118,7 +119,7 @@ int main(int argc, char const **argv)
     for (int i = 0; i < num_thread; ++i)
         pthread_create(&workers[i], NULL, worker, NULL);
 
-    string output_text ;
+    string output_text;
     for (int i = 0; i < iters; ++i)
     {
         output_text = output_text + to_string(i * dt);
