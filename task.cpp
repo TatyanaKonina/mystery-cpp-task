@@ -8,18 +8,17 @@
 #include <unistd.h>
 using namespace std;
 
-
+const double G = 6.67384e-11;
+#define SQUARE(x) (x) * (x)
+#define CUBE(x) (x) * (x) * (x)
+#ifndef INFO
 #define INFO(str)                      \
     do                                 \
     {                                  \
         std::cout << str << std::endl; \
     } while (false)
+#else
 #endif
-
-
-const double G = 6.67384e-11;
-#define SQUARE(x) (x) * (x)
-#define CUBE(x) (x) * (x) * (x)
 struct Body
 {
     double x, y, vx, vy;
@@ -136,8 +135,12 @@ int main(int argc, char const **argv)
     for (int i = 0; i < iters; ++i)
     {
         // if (gui)
-        //     draw_points(0);
-
+        //     draw_points(0);;
+        for (int i = 0; i < num_body; ++i)
+        {
+            Body &t = bodies[i];
+            INFO(i << " " << t.x << " " << t.y);
+        }
         pthread_mutex_lock(&queuing);
         queuing_jobs = num_body, num_done = 0;
         pthread_cond_broadcast(&processing);
@@ -153,6 +156,6 @@ int main(int argc, char const **argv)
     pthread_mutex_unlock(&queuing);
     for (int j = 0; j < num_thread; ++j)
         pthread_join(workers[j], NULL);
-    
+
     return 0;
 }
