@@ -1,52 +1,17 @@
-#include <pthread.h>
-#include <cmath>
-#include <chrono>
-#include <string>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <unistd.h>
-using namespace std;
+#include "task.h"
 
 
 int dt;
 int iters;
 int num_thread;
-#define SQUARE(x) (x) * (x)
-#define CUBE(x) (x) * (x) * (x)
-
-// вспомогательно для консоль лога  - TODO: оно нам все еще нужно????
-#ifndef INFO
-#define INFO(str)                      \
-    do                                 \
-    {                                  \
-        std::cout << str << std::endl; \
-    } while (false)
-#else
-#endif
-
-struct Body
-{
-    double x, y, vx, vy, m;
-};
-
-const double G = 6.67384e-11;
 bool gui, finsish = false;
 double Gmm;
 Body *bodies, *new_bodies;
 int num_body;
 int queuing_jobs = 0, num_done = 0;
-
-pthread_mutex_t queuing;  // мьютекс - это базовый элемент синхронизации
+pthread_mutex_t queuing;  // мьютекс - механизм синхронизации потоков
 pthread_cond_t processing, iter_fin;
 
-
-// TODO!!!! все функции обозначить (прописать сигнатуру)
-inline void move_nth_body(int index);
-void *worker(void *param);
-void input_bodies(string filename);
-void init_env(string input_file);
-void write_to_file(string filename, string output_text);
 
 // ALGO START
 inline void move_nth_body(int index)
@@ -95,9 +60,9 @@ void *worker(void *param)
 }
 
 
-void input_bodies(string filename)
+void input_bodies(std::string filename)
 {
-    ifstream input;
+    std::ifstream input;
     input.open(filename);
     input >> num_body;
     bodies = new Body[num_body];
@@ -112,28 +77,28 @@ void input_bodies(string filename)
 }
 
 
-void init_env(string input_file)
+void init_env(std::string input_file)
 {
     input_bodies(input_file);
 }
 
 
-void write_to_file(string filename, string output_text)
+void write_to_file(std::string filename, std::string output_text)
 {
-    ofstream output;
+    std::ofstream output;
     output.open(filename);
     output << output_text;
     output.close();
 }
 
-
+// RENAME NAMES OF VARS!!!!
 int main(int argc, char const **argv)
 {
     dt = atoi(argv[1]);  // шаг по времени
     iters = atoi(argv[2]);  // число итераций
     num_thread = atoi(argv[3]);  // число потоков
-    string input_file = argv[4]; // файл с переменными для рассчетов
-    string output_text;
+    std::string input_file = argv[4]; // файл с переменными для рассчетов
+    std::string output_text;
 
     init_env(input_file);
 
@@ -147,13 +112,13 @@ int main(int argc, char const **argv)
 
     for (int i = 0; i < iters; ++i)
     {
-        output_text = output_text + to_string(i * dt);
+        output_text = output_text + std::to_string(i * dt);
 
         for (int i = 0; i < num_body; ++i)
         {
             Body &t = bodies[i];
             output_text = output_text + ';';
-            output_text = output_text + to_string(t.x) + ';' + to_string(t.y);
+            output_text = output_text + std::to_string(t.x) + ';' + std::to_string(t.y);
         }
         output_text = output_text + "\n";
 
