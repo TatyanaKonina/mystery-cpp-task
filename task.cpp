@@ -42,10 +42,19 @@ void *worker(void *param)
 {
     while (true)
     {
+        // блокировка доступа к очереди
         pthread_mutex_lock(&queuing);
+        // проверка: следует ли продолжать ожидание
         while (!finsish && queuing_jobs <= 0)
+            // Функция pthread_cond_wait блокирует thread на неопределенное время. Если условие так никогда и не будет выполнено, то нить никогда не возобновится.
+            // Поскольку в функции pthread_cond_wait предусмотрена точка отмены thread, единственный способ выхода из этой
+            // тупиковой ситуации - отменить блокированную нить, если такая отмена разрешена.
+
+            // ожидать остальных (блокировать поток, пока не появится processing)
             pthread_cond_wait(&processing, &queuing);
         int i = --queuing_jobs;
+        // активизация взаимной блокировки - в противном случае
+        // из процедуры сможет выйти только один thread
         pthread_mutex_unlock(&queuing);
         if (finsish)
             break;
@@ -53,7 +62,9 @@ void *worker(void *param)
         pthread_mutex_lock(&queuing);
         num_done++;
         if (num_done >= num_body)
-            pthread_cond_signal(&iter_fin);  // разблокирует по крайней мере один из потоков, заблокированных по указанной переменной условия cond (если какие-либо потоки заблокированы по cond ).
+            // Функция pthread_cond_signal активизирует по крайней мере однин thread, который в данное время ожидает выполнения определенного условия.
+            // Thread для активизации выбирается в соответствии с наивысшим приоритетом планирования;
+            pthread_cond_signal(&iter_fin);
         pthread_mutex_unlock(&queuing);
     }
     return 0;
@@ -122,9 +133,12 @@ int main(int argc, char const **argv)
         }
         output_text = output_text + "\n";
 
-        pthread_mutex_lock(&queuing);  // блокируем доступ
+        // блокировка доступа к очереди
+        pthread_mutex_lock(&queuing);
         queuing_jobs = num_body, num_done = 0;
-        pthread_cond_broadcast(&processing);  // разблокирует потоки, заблокированные переменной условия.
+        // Функция pthread_cond_broadcast активизирует все threads, которые ожидают выполнения заданного условия.
+        // Однако после завершения функции thread можно вновь заблокировать до тех пор, пока не будет выполнено то же самое условие.
+        pthread_cond_broadcast(&processing);
         pthread_cond_wait(&iter_fin, &queuing);  // Эти функции атомарно освобождают мьютекс и заставляют вызывающий поток блокироваться по условной переменной cond ; атомарно здесь означает «атомарно в отношении доступа другого потока к мьютексу, а затем к условной переменной».
         pthread_mutex_unlock(&queuing);  // должна освободить объект мьютекса, на который ссылается мьютекс
         Body *t = new_bodies;
@@ -141,5 +155,9 @@ int main(int argc, char const **argv)
     for (int j = 0; j < num_thread; ++j)
         pthread_join(workers[j], NULL);  //  блокирует вызывающий поток, пока указанный поток не завершится.
 
+    // TODO: ОБЪЯСНИТЬ ЗАЧЕМ !!!!
+    pthread_mutex_destroy(&queuing);
+    pthread_cond_destroy(&iter_fin);
+    pthread_cond_destroy(&processing);
     return 0;
 }
