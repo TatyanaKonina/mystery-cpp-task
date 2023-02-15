@@ -42,7 +42,7 @@ void *worker(void *param)
 {
     while (true)
     {
-        // блокировка доступа к очереди
+        // блокировка доступа к очереди (когда модифицируем переменную -- или ++)
         pthread_mutex_lock(&queuing);
         // проверка: следует ли продолжать ожидание
         while (!finsish && queuing_jobs <= 0)
@@ -51,7 +51,13 @@ void *worker(void *param)
             // тупиковой ситуации - отменить блокированную нить, если такая отмена разрешена.
 
             // ожидать остальных (блокировать поток, пока не появится processing)
+            // ждем сигнал от другого треда который может пеменять или нет условие
             pthread_cond_wait(&processing, &queuing);
+             /* Equivalent to:
+            pthread_mutex_unlock(&queuing);
+            wait for signal processing
+            pthread_mutex_lock(&queuing);
+             */
         int i = --queuing_jobs;
         // активизация взаимной блокировки - в противном случае
         // из процедуры сможет выйти только один thread
@@ -64,6 +70,7 @@ void *worker(void *param)
         if (num_done >= num_body)
             // Функция pthread_cond_signal активизирует по крайней мере однин thread, который в данное время ожидает выполнения определенного условия.
             // Thread для активизации выбирается в соответствии с наивысшим приоритетом планирования;
+            // wait очнется и провкерит условие
             pthread_cond_signal(&iter_fin);
         pthread_mutex_unlock(&queuing);
     }
@@ -138,8 +145,15 @@ int main(int argc, char const **argv)
         queuing_jobs = num_body, num_done = 0;
         // Функция pthread_cond_broadcast активизирует все threads, которые ожидают выполнения заданного условия.
         // Однако после завершения функции thread можно вновь заблокировать до тех пор, пока не будет выполнено то же самое условие.
+        // транслирует сигнал всем ждушим тредам
         pthread_cond_broadcast(&processing);
+
         pthread_cond_wait(&iter_fin, &queuing);  // Эти функции атомарно освобождают мьютекс и заставляют вызывающий поток блокироваться по условной переменной cond ; атомарно здесь означает «атомарно в отношении доступа другого потока к мьютексу, а затем к условной переменной».
+        /* Equivalent to:
+            pthread_mutex_unlock(&queuing);
+            wait for signal iter_fin
+            pthread_mutex_lock(&queuing);
+        */
         pthread_mutex_unlock(&queuing);  // должна освободить объект мьютекса, на который ссылается мьютекс
         Body *t = new_bodies;
         new_bodies = bodies;
