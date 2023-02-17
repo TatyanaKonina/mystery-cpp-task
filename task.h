@@ -1,11 +1,13 @@
 #include <pthread.h>
 #include <cmath>
-#include <chrono>
+// #include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <time.h> //....
+#include "timer.h"
 
 #define SQUARE(x) (x) * (x)
 #define CUBE(x) (x) * (x) * (x)
@@ -18,8 +20,8 @@ struct Body
 };
 
 
-inline void move_nth_body(int index);
-void *worker(void *param);
-void input_bodies(std::string filename);
-void init_env(std::string input_file);
-void write_to_file(std::string filename, std::string output_text);
+inline void move_nth_body(int);
+void *worker(void *);
+void input_bodies(std::string);
+void init_env(std::string);
+void write_to_file(std::string, std::string);

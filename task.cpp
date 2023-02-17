@@ -11,6 +11,8 @@ int num_body;
 int queuing_jobs = 0, num_done = 0;
 pthread_mutex_t queuing;  // мьютекс - механизм синхронизации потоков
 pthread_cond_t processing, iter_fin;
+// nanoseconds total_time;;
+double total_time;
 
 
 // ALGO START
@@ -117,8 +119,12 @@ int main(int argc, char const **argv)
     num_thread = atoi(argv[3]);  // число потоков
     std::string input_file = argv[4]; // файл с переменными для рассчетов
     std::string output_text;
+    // clock_t begin;
+    double start_t, end_t;
 
     init_env(input_file);
+
+    GET_TIME(start_t);
 
     pthread_t workers[num_thread];  // задаем кол-во потоков
     pthread_mutex_init(&queuing, NULL);  // Перед использованием инициализируем мьютекс (это механизм изоляции, используемый сервером баз данных для синхронизации доступа нескольких потоков к совместно используемым ресурсам)
@@ -130,6 +136,9 @@ int main(int argc, char const **argv)
 
     for (int i = 0; i < iters; ++i)
     {
+
+        // begin = clock();
+
         output_text = output_text + std::to_string(i * dt);
 
         for (int i = 0; i < num_body; ++i)
@@ -173,5 +182,11 @@ int main(int argc, char const **argv)
     pthread_mutex_destroy(&queuing);
     pthread_cond_destroy(&iter_fin);
     pthread_cond_destroy(&processing);
+
+    // free(workers); /////////////////////////// ??????
+    GET_TIME(end_t);
+
+    std::cout << "TIME: " << end_t - start_t;
+
     return 0;
 }
