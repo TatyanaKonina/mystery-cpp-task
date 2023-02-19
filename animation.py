@@ -6,7 +6,7 @@ from celluloid import Camera
 def main():
     fig = plt.figure()
     camera = Camera(fig)
-    with open("output2.csv", 'r') as file:
+    with open("output945points.csv", 'r') as file:
         csvreader = csv.reader(file, delimiter=';')
         for row in csvreader:
             row.pop(0)
@@ -16,7 +16,8 @@ def main():
             for num in dots:
                 x.append(float(num[0]))
                 y.append(float(num[1]))
-            plt.plot(x, y, 'ro')
+            plt.plot(x, y, 'bo', markersize=1)
+            # plt.axis([-1000, 1000, -500, 500])
             plt.axis([min(x), max(x), min(y), max(y)])
             camera.snap()
     animation = camera.animate(repeat=True)
