@@ -77,23 +77,23 @@ for (int i = 0; i < iters; ++i) {
 **Charts**
 
 <p align="center">
-  <img src="./charts/300-100_128.png" width="650" title="hover text">
+  <img src="./charts/300-100_128.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/150-100_128.png" width="650" title="hover text">
+  <img src="./charts/150-100_128.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/500-250_128.png" width="650" title="hover text">
+  <img src="./charts/500-250_128.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/1000-50_128.png" width="650" title="hover text">
+  <img src="./charts/1000-50_128.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/5-50_128.png" width="650" title="hover text">
+  <img src="./charts/5-50_128.png" width="1050" title="hover text">
 </p>
 
 ### **512 points**
@@ -108,23 +108,23 @@ for (int i = 0; i < iters; ++i) {
 **Charts**
 
 <p align="center">
-  <img src="./charts/300-100_512.png" width="650" title="hover text">
+  <img src="./charts/300-100_512.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/150-100_512.png" width="650" title="hover text">
+  <img src="./charts/150-100_512.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/500-250_512.png" width="650" title="hover text">
+  <img src="./charts/500-250_512.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/1000-50_512.png" width="650" title="hover text">
+  <img src="./charts/1000-50_512.png" width="1050" title="hover text">
 </p>
 
 <p align="center">
-  <img src="./charts/5-50_512.png" width="650" title="hover text">
+  <img src="./charts/5-50_512.png" width="1050" title="hover text">
 </p>
 
 
