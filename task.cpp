@@ -169,7 +169,7 @@ int main(int argc, char const **argv)
         bodies = t;
     }
 
-    write_to_file("output2.csv", output_text);
+    write_to_file("output.csv", output_text);
     finsish = true;
     pthread_mutex_lock(&queuing);
     pthread_cond_broadcast(&processing);
