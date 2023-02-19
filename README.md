@@ -77,15 +77,15 @@ for (int i = 0; i < iters; ++i) {
 **Charts**
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/300-100_2.png" width="650" title="hover text">
+  <img src="./charts/300-100_2.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/150-100_2.png" width="650" title="hover text">
+  <img src="./charts/150-100_2.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/500-250_2.png" width="650" title="hover text">
+  <img src="./charts/500-250_2.png" width="650" title="hover text">
 </p>
 
 **Conclusion**
@@ -106,23 +106,23 @@ for (int i = 0; i < iters; ++i) {
 **Charts**
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/100-300_512.png" width="650" title="hover text">
+  <img src="./charts/100-300_512.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/100-150_512.png" width="650" title="hover text">
+  <img src="./charts/100-150_512.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/250-500_512.png" width="650" title="hover text">
+  <img src="./charts/250-500_512.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/50-1000_512.png" width="650" title="hover text">
+  <img src="./charts/50-1000_512.png" width="650" title="hover text">
 </p>
 
 <p align="center">
-  <img src="/root/User/DEN/mystery-cpp-task/charts/50-5_512.png" width="650" title="hover text">
+  <img src="./charts/50-5_512.png" width="650" title="hover text">
 </p>
 
 
