@@ -120,7 +120,9 @@ int main(int argc, char const **argv)
     // создаем столько тредов  сколько задали
     for (int i = 0; i < num_thread; ++i)
         pthread_create(&workers[i], NULL, worker, NULL);
+
     GET_TIME(start_t);
+
     for (int i = 0; i < iters; ++i)
     {
 
@@ -152,7 +154,9 @@ int main(int argc, char const **argv)
         new_bodies = bodies;
         bodies = t;
     }
+
     GET_TIME(end_t);
+
     finsish = true;
     pthread_mutex_lock(&queuing);
     // посылаем сигнал что мы закончили последнюю итерацию
@@ -168,7 +172,7 @@ int main(int argc, char const **argv)
     pthread_cond_destroy(&processing);
 
     std::cout << "TIME: " << end_t - start_t;
-    write_to_file("output.csv", output_text);
+    write_to_file("output2.csv", output_text);
     return 0;
 }
 
