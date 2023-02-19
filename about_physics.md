@@ -1,0 +1,33 @@
+Взаимодействие тел моделируется пошагово с помощью дискретных отрезков времени фиксированной длительности dt. На каждом шаге вычисляется сила, действующая на каждое тело в начальный момент времени (указатели 1,2), по найденной силе через ускорение a нах-ся новые скорости и координаты.
+
+f_sum_x вычисляется по формуле Fx*cos, где ![формула](./images//%D1%84%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D1%81%D0%B8%D0%BB%D1%8B.png)
+
+
+Новые скорости вычисляются по формуле  [формула](./images//%D1%84%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D1%81%D0%BA%D0%BE%D1%80%D0%BE%D1%81%D1%82%D0%B8.png), где успорение вычисляется из второго закона Ньютона [формула](./images//%D0%B7%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BD%D1%8C%D1%8E%D1%82%D0%BE%D0%BD%D0%B0.png) и вычисленной ранее силы.
+
+новые координаты вычисляются по формуле [формула](./images//%D1%84%D0%BE%D1%80%D1%83%D0%BC%D1%83%20%D0%BA%D0%BE%D0%BE%D1%80%D0%B4%D0%B8%D0%BD%D0%B0%D1%82.png)
+
+```c
+inline void move_nth_body(int index)
+{
+    Body &a = bodies[index], &new_a = new_bodies[index];
+    double f_sum_x = 0, f_sum_y = 0;
+    for (int i = 0; i < num_body; ++i)
+    {
+        if (index == i)
+            continue;
+        Body &b = bodies[i];
+        Gmm = G * b.m * a.m;
+        double dx = b.x - a.x, dy = b.y - a.y,
+        radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy)));
+        f_sum_x += Gmm * dx / radius_cube_sqrt; // (1)
+        f_sum_y += Gmm * dy / radius_cube_sqrt;// (2)
+    }
+    new_a.vx = a.vx + f_sum_x * dt / a.m;
+    new_a.vy = a.vy + f_sum_y * dt / a.m;
+    new_a.x = a.x + new_a.vx * dt;
+
+    new_a.y = a.y + new_a.vy * dt;
+    new_a.m = a.m;
+}
+```

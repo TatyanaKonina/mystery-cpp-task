@@ -27,7 +27,7 @@ inline void move_nth_body(int index)
         Body &b = bodies[i];
         Gmm = G * b.m * a.m;
         double dx = b.x - a.x, dy = b.y - a.y,
-        radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy))) + 10e-7;
+        radius_cube_sqrt = CUBE(sqrt(SQUARE(dx) + SQUARE(dy)));
         f_sum_x += Gmm * dx / radius_cube_sqrt;
         f_sum_y += Gmm * dy / radius_cube_sqrt;
     }
