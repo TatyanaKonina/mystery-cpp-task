@@ -1,12 +1,10 @@
 #include <pthread.h>
 #include <cmath>
-// #include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
 #include <string>
-#include <time.h> //....
 #include "timer.h"
 
 #define SQUARE(x) (x) * (x)
